@@ -4,8 +4,3 @@ export interface Appointment{
     endTime: Date;
     confirmed: boolean;
 }
-export interface AppointmentInput{
-    patientId: number;
-    startTime:  Date;
-    endTime: Date;
-}

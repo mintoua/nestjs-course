@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Patient } from './patient.model';
+
 export interface PatientInput {
   name: string;
 }
+
 @Injectable()
 export class PatientService {
   private readonly patients: Patient[] = [];

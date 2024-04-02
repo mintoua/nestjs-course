@@ -1,21 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { AppointmentInput, Appointment } from './appointment.model';
+import { PatientService } from '../patient/patient.service';
+import { Appointment } from './appointment.model';
+
+
+export interface AppointmentInput {
+    patientId: number;
+    startTime: Date;
+    endTime: Date;
+}
 
 @Injectable()
 export class AppointmentService {
 
-    public scheduleAppointment(appointmentData:  AppointmentInput): Appointment{
-        if(appointmentData.endTime <= appointmentData.startTime){
-            throw new Error("appointment endTime should be after startTime");
+    constructor(private readonly patientService: PatientService){}
+
+    public async scheduleAppointment(appointmentData: AppointmentInput): Promise<Appointment>{
+        if(appointmentData.endTime <= appointmentData.startTime) {
+            throw new Error("appointment's endTime should be after startTime")
         }
 
-        if (
+        if(
             this.endTimeIsInTheNextDay(appointmentData)
-          ) {
-            throw new Error(
-              "appointment's endTime should be in the same day as start time's",
-            );
-          }
+        ){
+            throw new Error("appointment's endTime should be in the same day as start time's")
+        }
+
+        const patientExists = await this.patientService.doesPatientExist(
+            appointmentData.patientId
+        )
+
+        if(!patientExists){
+            throw new Error('Patient does not exist');
+        }
 
         return {
             ...appointmentData,
@@ -23,18 +39,19 @@ export class AppointmentService {
         }
     }
 
-    private endTimeIsInTheNextDay(appointmentData: AppointmentInput): boolean {
-        const differentDays =
-          appointmentData.endTime.getUTCDate() !==
-          appointmentData.startTime.getUTCDate();
-        const differentMonths =
-          appointmentData.endTime.getUTCMonth() !==
-          appointmentData.startTime.getUTCMonth();
-          const differentYears =
-          appointmentData.endTime.getUTCFullYear() !==
-          appointmentData.startTime.getUTCFullYear();
-        return differentDays || differentMonths || differentYears;
-      }
+    private endTimeIsInTheNextDay (appointmentData: AppointmentInput): boolean {
+        const differentDays = 
+            appointmentData.endTime.getUTCDate() !==
+            appointmentData.startTime.getUTCDate();
 
+        const differentMonths = 
+            appointmentData.endTime.getUTCMonth() !==
+            appointmentData.startTime.getUTCMonth();
+        
+        const differentYears = 
+            appointmentData.endTime.getUTCFullYear() !==
+            appointmentData.startTime.getUTCFullYear();
+
+        return differentDays || differentMonths || differentYears
+    }
 }
-
