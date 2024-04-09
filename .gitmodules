@@ -1,6 +1,0 @@
-[submodule "doctor-nestjstdd"]
-	path = doctor-nestjstdd
-	url = .\\doctor-nestjstdd\\
-[submodule "iluvcoffee"]
-	path = iluvcoffee
-	url = .\\iluvcoffee\\
